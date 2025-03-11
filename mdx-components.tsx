@@ -19,5 +19,38 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         </figure>
       )
     },
+    // Add styling for code blocks
+    pre: ({
+      children,
+      ...props
+    }: {
+      children: React.ReactNode
+      className?: string
+    }) => {
+      return (
+        <pre className="" {...props}>
+          {children}
+        </pre>
+      )
+    },
+    code: ({
+      children,
+      className,
+      ...props
+    }: {
+      children: React.ReactNode
+      className?: string
+    }) => {
+      const match = /language-(\w+)/.exec(className || '')
+      return match ? (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      ) : (
+        <code className="" {...props}>
+          {children}
+        </code>
+      )
+    },
   }
 }
