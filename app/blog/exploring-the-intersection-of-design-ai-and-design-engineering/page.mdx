@@ -1,101 +1,227 @@
-<Cover
-  src="https://cdn.cosmos.so/affd4b79-e848-4dfd-bd42-5f2c4a847365?format=jpeg"
-  alt="Image from the movie Alien - from cosmos.com"
-  caption="cosmos.com"
-/>
+# LLMエージェントの新常識「MCP」とは？開発者必見の徹底解説！
 
-# Exploring the Intersection of Design, AI, and Design Engineering
+## TL;DL
 
-Design and artificial intelligence (AI) are increasingly intertwined, driving innovation across industries. As technology evolves, the role of design engineering is more critical than ever, bridging creativity and functionality.
+- **MCP (Model Context Protocol) は、LLMエージェントが様々なデータソース (コンテンツ、ツールなど) に接続するためのプロトコルです。**
+- **目的:** 接続の標準化と、AIシステムの管理の簡素化。
+- **ツールとの違い:** MCP は**プロトコル**であり、ツールは MCP を通じて公開される機能の一つ。
+- **従来の問題:** LLM と異なるデータソースを繋ぐには、カスタム実装が必要だった。
+- **MCP の利点:** 標準化されたプロトコルのため、カスタム実装なしで様々なデータソースに接続可能 (REST API に類似)。
+- **構成:**
+  - **MCP クライアント:** LLMエージェントやアプリケーション (例: Claude Desktop、IDE)。
+  - **MCP サーバー:** 特定のデータソースやツールに接続し、機能を公開する軽量プログラム。
+- **MCP サーバーでできること:**
+  - **ツール:** 実行可能な機能をクライアントに公開 (例: 計算、検索)。
+  - **リソース:** データやコンテンツを公開。
+  - プロンプト、サンプリング、ルート (現状ではツールとリソースが主に利用)。
+- **現状:** 2024年11月発表の新しい技術で、発展途上。ツールとリソースアクセスが主な用途。
+- **将来性:** エージェントの流行に伴い、飛躍的に発展するになる可能性が高い。
 
----
+## MCPとは？
 
-## The Evolving Role of AI in Design
+**MCP（Model Context Protocol）とは、LLMエージェントがコンテンツ、ツールなど、様々なデータソースに接続できるようにするためのプロトコルです。** 単一のプロトコルで接続を標準化することで、AIシステムの管理を容易にすることを目指しています。2024年11月にAnthropicが発表して以来、MCPはCursorなどのLLMベースのアプリケーションで利用されており、LLMエージェントの発展において重要な役割を果たしています。
 
-AI is no longer just a backend tool—it’s becoming an active collaborator in the creative process. From generating design ideas to optimizing layouts, AI offers endless possibilities. For instance:
+## MCPが解決する問題（ツールとの違い）
 
-- **Generative Design**: AI algorithms can generate thousands of design variations based on constraints, helping designers explore ideas faster.
-- **User Experience Optimization**: AI analyzes user behavior to suggest improvements, enabling data-driven design decisions.
-- **Automation**: Repetitive tasks like resizing assets or formatting layouts can be automated, freeing up designers for more strategic work.
+筆者はCline（オープンソース版Cursor）でMCPのことを知りました。当初は、「わざわざ難しい名前を付けているが、これは単純にツールではないか？」と感じました。しかし、詳細に調べていくうちに、**MCPはプロトコルであり、ツールとは異なる**ことがわかりました。
 
-## Challenges and Opportunities
+例として、二つのシナリオを考えてみましょう。
 
-While AI empowers designers, it also raises challenges:
+1.  AさんはLlamaIndexでLLMエージェントアプリケーションを開発しています。LangChainにあるツールを利用したいのですが、それが可能かどうか不明なため、調査が必要です。
 
-### Challenges
+2.  BさんはTypeScriptでLLMエージェントアプリケーションを開発しています。エージェント用の検索ツールが必要ですが、LangChainのPythonライブラリには`duckduckgo`の検索ツールがあるものの、言語が異なるため利用できません。
 
-- **Ethical Design**: AI systems may unintentionally reinforce biases. Designers must ensure inclusivity and fairness.
-- **Loss of Control**: Relying too heavily on AI can dilute the human touch in design.
-- **Learning Curve**: Integrating AI tools requires new skills, which can be daunting for some designers.
+従来、このようにLLMと異なるデータソースに接続するには、それぞれカスタム実装が必要でした。しかし、MCPという標準化されたプロトコルがあれば、カスタム実装なしで、様々なデータソースに容易に接続できます（REST APIとよく似ています）。
 
-### Opportunities
+## MCPの構成
 
-- **Enhanced Creativity**: AI can inspire by offering unconventional ideas.
-- **Efficiency Gains**: Automation allows for rapid iteration and prototyping.
-- **Scalability**: AI enables personalized experiences at scale, a growing demand in today’s market.
+MCPはクライアント-サーバーアーキテクチャを採用しています：
 
----
+- **MCPクライアント:** LLMエージェントやアプリケーションで、データにアクセスするためにMCPを使用します（例: Claude Desktop、IDE、AIツール）。
 
-## Design Engineering: The Glue Between Creativity and Execution
+- **MCPサーバー:** 特定のデータソースやツールに接続し、その機能をMCPを通じて公開する軽量プログラムです（例: ファイルシステム、データベース、Webサービス）。
 
-Design engineering ensures that the gap between creative vision and technical execution is seamless. It combines the artistry of design with the precision of engineering.
+![General architecture](images/General-architecture.png)
 
-### Key Principles of Design Engineering
+ホストは複数のサーバーに接続でき、各サーバーが異なるデータソースへのアクセスを提供します。この設計により、AIはカスタム統合なしで多様なデータにアクセスできます。プロトコルはJSON-RPCに基づいており、多くのプログラミング言語と互換性があります。
 
-1. **Systems Thinking**: Viewing a design holistically ensures all components work together cohesively.
-2. **Collaboration**: Effective communication between designers and developers is crucial for successful outcomes.
-3. **Iterative Process**: Building, testing, and refining are fundamental to achieving the best results.
+## MCPサーバーを実際に作ってみる
 
-> "Good design is as little design as possible." — Dieter Rams
+MCPはあくまでもプロトコルなので、プログラミング言語に関わらずサーバーを構築/アクセスすることができます。ただし、まだ発展途上であり、現在サポートされている(SDKが提供されている)言語はPython, TypeScript, Java, Kotlinです。今回はPythonで実装してみます。
 
-### Tools of the Trade
+### 環境準備
 
-Modern design engineers leverage tools like:
+Pythonでサーバーを構築する際には`uv`というパッケージ管理ツールを利用しているので、まずそれをインストールします。
 
-- **Figma** and **Sketch** for prototyping
-- **Motion** for creating smooth animations
-- **Tailwind CSS** for streamlined styling
-- **Git** for version control and collaboration
+```cmd
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
----
+次に再起動し、Python環境をインストールします。
 
-## AI and Design Engineering: A Symbiotic Relationship
+```bash
+# 新しいプロジェクトディレクトリを作成
+uv init calculator
+cd calculator
 
-The integration of AI into design engineering creates powerful synergies:
+# 仮想環境を作成し、アクティベート
+uv venv
+source .venv/bin/activate
 
-- **Prototyping with AI**: AI-driven tools like ChatGPT assist in generating content for prototypes, accelerating the design process.
-- **Predictive Analytics**: Engineers use AI to predict performance issues and optimize designs in real-time.
-- **Accessibility Improvements**: AI tools automatically detect and fix accessibility concerns, ensuring compliance.
+# 依存関係をインストール
+uv add "mcp[cli]"
 
-### Case Study: Motion-Primitives
+# サーバーファイルを作成
+touch calculator.py
+```
 
-Motion-Primitives demonstrates how AI and design engineering come together. By leveraging Framer Motion and Tailwind CSS, it simplifies the creation of dynamic, responsive interfaces. AI can enhance this by:
+### サーバーロジックの実装
 
-- Generating motion patterns based on user preferences.
-- Optimizing performance for different devices.
-- Automating testing for cross-browser compatibility.
+以下のスクリプトを`calculator.py`に記述すれば完了です。これにより、入力された数式を計算し、結果を返すツールを持つMCPサーバーが作成されます。
 
----
+```python
+from typing import Any
 
-## Conclusion
+from mcp.server.fastmcp import FastMCP
 
-The intersection of AI, design, and design engineering is reshaping the industry. By embracing AI while staying grounded in design principles, professionals can push boundaries and create experiences that are both innovative and human-centered. The future lies in collaboration—not only between humans and machines but also among designers, engineers, and AI.
+mcp = FastMCP("calculator")
 
----
 
-### Questions for Reflection
+@mcp.tool()
+def calculator(expression: str) -> Any:
+    """Calculate a mathematical expression.
 
-- How can we ensure AI remains a tool for empowerment rather than replacement?
-- What steps can design engineers take to integrate AI responsibly into their workflows?
+    Args:
+        expression: Mathematical expression to evaluate
+    """
+    result = eval(expression)
+    return result
 
-### Further Reading
 
-- [Designing for AI](https://example.com/designing-for-ai)
-- [The Future of Design Systems](https://example.com/future-design-systems)
-- [Ethical AI Guidelines](https://example.com/ethical-ai)
+if __name__ == "__main__":
+    # サーバーを初期化し、実行
+    mcp.run(transport="stdio")
+```
 
----
+いかがでしょうか。PythonのLangchainでツールを作理、FastAPIでサービングすることとよく似ていませんか。
 
-### Music for Inspiration
+## MCPサーバーにアクセスする
 
-Listening to music while working? Check out _"Motion"_ by Tycho—a perfect blend of creativity and rhythm.
+### 接続
+
+次に以下のコードを実行すれば、サーバーに接続できます。環境は任意なので、Jupyterで接続してみました。
+
+```python
+from contextlib import AsyncExitStack
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+exit_stack = AsyncExitStack()
+
+command = "python" # 今回はPythonでサーバーコードを記述したため
+server_script_path = "calculator.py" # サーバーコードのパス
+server_params = StdioServerParameters(
+    command=command, args=[server_script_path], env=None
+)
+stdio, write = await exit_stack.enter_async_context(stdio_client(server_params))
+session = await exit_stack.enter_async_context(ClientSession(stdio, write))
+await session.initialize()
+```
+
+上記のコードには`StdioServerParameters`などの見慣れない要素がありますが、利用する上で特に理解する必要はないので、そのまま書けば良いです。
+
+ちなみに、接続情報としてスクリプトの言語と`server_script_path`が必要なのは、現時点ではネットワークを介したMCPサーバーへの接続がまだ開発中であり、MCPサーバーがまだローカルでしか動作しないためです。ローカルでサーバーを動作させるために、内部で言語によってサーバースクリプトを実行する方法を変えています。Pythonの場合は`uvx`、TypeScriptの場合は`npx`でサーバースクリプトを実行しています。
+
+### リクエスト
+
+次にリクエストを実行してみましょう。まず、サーバー側でどのようなツールが利用可能かを確認します。
+
+```python
+response = await session.list_tools()
+tools = response.tools
+print(tools[0].model_dump_json(indent=4))
+```
+
+```json
+{
+  "name": "calculator",
+  "description": "Calculate a mathematical expression.\n\n    Args:\n        expression: Mathematical expression to evaluate\n    ",
+  "inputSchema": {
+    "properties": {
+      "expression": {
+        "title": "Expression",
+        "type": "string"
+      }
+    },
+    "required": ["expression"],
+    "title": "calculatorArguments",
+    "type": "object"
+  }
+}
+```
+
+先ほど定義した`calculator`ツールの詳細が表示されました。
+
+ツールの情報をLLMに送信すれば、LLMはユーザーのリクエストに応じてツールを呼び出し、利用することができます。例えば、LLMがユーザーから`4**2の結果は？`という質問を受け、それをツールで計算するとしましょう（今回は説明を簡潔にするためLLMの部分は省略します）。その場合、以下のようにMCPサーバーへリクエストし、結果を得ることができます。
+
+```python
+tool_name = "calculator"
+tool_args = {"expression": "4**2"}
+result = await session.call_tool(tool_name, tool_args)
+result
+```
+
+```text
+CallToolResult(meta=None, content=[TextContent(type='text', text='16', annotations=None)], isError=False)
+```
+
+このように、利用したいツールとパラメータをサーバーに渡せば、結果が返ってきます。LLMはその結果を用いてユーザーに応答することができます。
+
+## ツール以外の機能
+
+ツールを利用する以外に、MCPサーバーでできることを以下にまとめました。
+
+- **リソース (Resources):** リソースは、Model Context Protocol (MCP) の中核となるプリミティブ（基本要素）であり、サーバーがデータやコンテンツを公開することを可能にします。クライアントはそれらを読み取り、LLM との対話のコンテキストとして使用できます。
+
+- **プロンプト (Prompts):** プロンプトにより、サーバーは再利用可能なプロンプトテンプレートとワークフローを定義できます。クライアントはこれらをユーザーや LLM に容易に提示できます。プロンプトは、一般的な LLM との対話を標準化し、共有するための強力な手段を提供します。
+
+- **ツール (Tools):** ツールは MCP の強力なプリミティブであり、サーバーが実行可能な機能をクライアントに公開できるようにします。ツールを通じて、LLM は外部システムと対話し、計算を実行し、現実世界でアクションを起こすことができます。
+
+- **サンプリング (Sampling):** サンプリングは強力な MCP 機能であり、サーバーがクライアントを通じて LLM の補完を要求できるようにします。これにより、セキュリティとプライバシーを維持しながら、高度なエージェント的動作が可能になります。
+
+- **ルート (Roots):** ルートは MCP の概念であり、サーバーが動作できる境界を定義します。クライアントがサーバーに関連リソースとその場所を通知するための手段を提供します。
+
+5つの機能がありますが、残念ながら、現時点ではツール使用とリソースアクセスとしての利用がほとんどです。以下は各クライアントがサポートする機能をまとめたものです。
+
+| Client                   | Resources | Prompts | Tools | Sampling | Roots | Notes                                                              |
+| ------------------------ | :-------: | :-----: | :---: | :------: | :---: | ------------------------------------------------------------------ |
+| Claude Desktop App       |    ✅     |   ✅    |  ✅   |    ❌    |  ❌   | Full support for all MCP features                                  |
+| 5ire                     |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| BeeAI Framework          |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in agentic workflows.                               |
+| Cline                    |    ✅     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools and resources.                                      |
+| Continue                 |    ✅     |   ✅    |  ✅   |    ❌    |  ❌   | Full support for all MCP features                                  |
+| Cursor                   |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| Emacs Mcp                |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in Emacs.                                           |
+| Firebase Genkit          |    ⚠️     |   ✅    |  ✅   |    ❌    |  ❌   | Supports resource list and lookup through tools.                   |
+| GenAIScript              |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| Goose                    |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| LibreChat                |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools for Agents                                          |
+| mcp-agent                |    ❌     |   ❌    |  ✅   |    ⚠️    |  ❌   | Supports tools, server connection management, and agent workflows. |
+| Roo Code                 |    ✅     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools and resources.                                      |
+| Sourcegraph Cody         |    ✅     |   ❌    |  ❌   |    ❌    |  ❌   | Supports resources through OpenCTX                                 |
+| Superinterface           |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools                                                     |
+| TheiaAI/TheiaIDE         |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools for Agents in Theia AI and the AI-powered Theia IDE |
+| Windsurf Editor          |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools with AI Flow for collaborative development.         |
+| Zed                      |    ❌     |   ✅    |  ❌   |    ❌    |  ❌   | Prompts appear as slash commands                                   |
+| \[OpenSumi\]\[OpenSumi\] |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in OpenSumi                                         |
+
+## まとめ
+
+改めて、MCP(Model Context Protocol)はLLMとリソースのコミュニケーションを円滑にするための**プロトコル**です。SNS等で言及されているMCPは、実際にはMCPサーバーを指していることが多いです。2024年の11月に提唱され、まだ4ヶ月しか経っていない、生まれたばかりの技術です。ツール、リソースなどの機能がありますが、まだ発展途上のため、十分に活用されていません。しかし、エージェントが注目され始めている現在の状況から見ると、今できているツールの部分が全部MCPサーバーに代替されるでしょう。
+
+## もっと知りたい方へ
+
+- [Introducing the Model Context Protocol](https://www.anthropic.com/news/model-context-protocol)
+- [MCPの公式ドキュメント](https://modelcontextprotocol.io/introduction)
+- [MCPのpython SDK](https://github.com/modelcontextprotocol/python-sdk)
