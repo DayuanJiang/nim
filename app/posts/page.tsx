@@ -15,7 +15,7 @@ async function extractMetadata(filePath: string): Promise<PostMeta | null> {
   try {
     const content = await readFile(filePath, 'utf-8')
     const metaMatch = content.match(/export const meta = ({[\s\S]*?});/)
-    
+
     if (metaMatch && metaMatch[1]) {
       try {
         // Use Function constructor to safely evaluate the object literal
@@ -47,10 +47,10 @@ function formatDate(dateStr: string): string {
 async function getPosts() {
   const postsDirectory = path.join(process.cwd(), 'app/post')
   const entries = await readdir(postsDirectory, { withFileTypes: true })
-  
+
   // Filter only directories and exclude layout file
   const postDirs = entries.filter(entry => entry.isDirectory())
-  
+
   // Read metadata from MDX files
   const posts = await Promise.all(
     postDirs.map(async (dir) => {
@@ -98,18 +98,18 @@ export default async function PostsPage() {
             <div className="flex flex-col gap-0">
               <div className="flex items-top justify-between mb-0.5">
                 <div className="flex flex-col space-y-0">
-                <span className="font-normal dark:text-zinc-100">
-                  {post.title}
-                </span>
-                {post.description && (
-                <span className="text-zinc-500 dark:text-zinc-400 text-sm my-0">
-                  {post.description}
+                  <span className="font-normal dark:text-zinc-100">
+                    {post.title}
+                  </span>
+                  {post.description && (
+                    <span className="text-zinc-500 dark:text-zinc-400 text-sm my-0">
+                      {post.description}
                     </span>
-                   
+
                   )}
-                   </div>
+                </div>
                 {post.date && (
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                  <span className="text-sm text-zinc-500 dark:text-zinc-400 text-right">
                     {post.date}
                   </span>
                 )}

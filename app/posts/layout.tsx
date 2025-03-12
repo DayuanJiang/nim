@@ -17,7 +17,7 @@ export default function LayoutBlogPost({
         }}
       />
 
-      <main className="prose prose-gray dark:prose-invert mt-24 pb-20">
+      <main className="dark:prose-invert mt-24 pb-20">
         {children}
       </main>
     </>
