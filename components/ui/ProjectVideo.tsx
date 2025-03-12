@@ -37,7 +37,7 @@ export function ProjectVideo({ src }: ProjectVideoProps) {
             autoPlay
             loop
             muted
-            className="aspect-video h-[50vh] w-full rounded-xl md:h-[70vh]"
+            className="aspect-video h-[50vh] w-full rounded-xl md:h-[50vh]"
           />
         </MorphingDialogContent>
         <MorphingDialogClose

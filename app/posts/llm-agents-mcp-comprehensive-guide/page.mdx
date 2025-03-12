@@ -1,4 +1,4 @@
-# LLMエージェントの新常識「MCP」とは？開発者必見の徹底解説！
+# The New Standard for LLM Agents: A Comprehensive Guide of MCP
 
 ## TL;DR
 
@@ -35,13 +35,15 @@ Traditionally, connecting LLMs to different data sources like these required ind
 
 ## MCP Architecture
 
+
 MCP adopts a client-server architecture:
 
 - **MCP Client:** LLM agents or applications that use MCP to access data (e.g., Claude Desktop, IDEs, AI tools).
 
 - **MCP Server:** Lightweight programs that connect to specific data sources or tools and expose their functionalities through MCP (e.g., file systems, databases, web services).
 
-![General architecture](images/General-architecture.png)
+![General architecture](https://res.cloudinary.com/jiang/image/upload/v1741751617/blog/d1ec459185b2b186169d7cbc9d9c5006ea06b8a8d4325ada24c4edff43abb0fb.jpg)  
+
 
 A host can connect to multiple servers, with each server providing access to different data sources. This design allows AI to access diverse data without custom integrations. The protocol is based on JSON-RPC, making it compatible with many programming languages.
 

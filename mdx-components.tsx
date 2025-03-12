@@ -3,6 +3,11 @@ import type { MDXComponents } from 'mdx/types'
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
+    table: ({ children }: { children: React.ReactNode }) => (
+      <div className="relative md:left-[calc(-30vw+50%+2rem)] md:w-[calc(60vw-4rem)]">
+        <table className="w-full">{children}</table>
+      </div>
+    ),
     Cover: ({
       src,
       alt,
