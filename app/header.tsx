@@ -19,6 +19,20 @@ export function Header() {
           Data Scientist
         </TextEffect>
       </div>
+      <nav className="flex items-center gap-6">
+        <Link
+          href="/posts"
+          className="text-sm text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
+        >
+          Posts
+        </Link>
+        <Link
+          href="/projects"
+          className="text-sm text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white"
+        >
+          Projects
+        </Link>
+      </nav>
     </header>
   )
 }
