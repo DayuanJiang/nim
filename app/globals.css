@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+
 @custom-variant dark (&:is(.dark *));
 
 /*
@@ -17,5 +18,10 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+
+  .post-description {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
   }
 }

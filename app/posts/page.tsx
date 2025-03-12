@@ -96,21 +96,25 @@ export default async function PostsPage() {
             data-id={post.slug}
           >
             <div className="flex flex-col gap-0">
-              <div className="flex items-center justify-between mb-0.5">
-                <h4 className="font-normal dark:text-zinc-100">
+              <div className="flex items-top justify-between mb-0.5">
+                <div className="flex flex-col space-y-0">
+                <span className="font-normal dark:text-zinc-100">
                   {post.title}
-                </h4>
+                </span>
+                {post.description && (
+                <span className="text-zinc-500 dark:text-zinc-400 text-sm my-0">
+                  {post.description}
+                    </span>
+                   
+                  )}
+                   </div>
                 {post.date && (
                   <span className="text-sm text-zinc-500 dark:text-zinc-400">
                     {post.date}
                   </span>
                 )}
               </div>
-              {post.description && (
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm my-0">
-                  {post.description}
-                </p>
-              )}
+
             </div>
           </Link>
         ))}
