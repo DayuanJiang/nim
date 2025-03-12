@@ -7,6 +7,9 @@ import remarkGfm from 'remark-gfm';
 const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  images: {
+    domains: ['res.cloudinary.com'],
+  },
 };
 
 const withMDX = createMDX({
