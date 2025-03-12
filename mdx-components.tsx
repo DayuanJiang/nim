@@ -4,8 +4,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
     table: ({ children }: { children: React.ReactNode }) => (
-      <div className="relative md:left-[calc(-30vw+50%+2rem)] md:w-[calc(60vw-4rem)]">
-        <table className="w-full">{children}</table>
+      <div className="relative lg:left-[calc(-30vw+50%+2rem)] lg:w-[calc(60vw-4rem)] overflow-x-auto">
+        <table className="w-full min-w-full">{children}</table>
       </div>
     ),
     Cover: ({
