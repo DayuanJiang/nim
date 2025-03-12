@@ -1,83 +1,83 @@
 # LLMエージェントの新常識「MCP」とは？開発者必見の徹底解説！
 
-## TL;DL
+## TL;DR
 
-- **MCP (Model Context Protocol) は、LLMエージェントが様々なデータソース (コンテンツ、ツールなど) に接続するためのプロトコルです。**
-- **目的:** 接続の標準化と、AIシステムの管理の簡素化。
-- **ツールとの違い:** MCP は**プロトコル**であり、ツールは MCP を通じて公開される機能の一つ。
-- **従来の問題:** LLM と異なるデータソースを繋ぐには、カスタム実装が必要だった。
-- **MCP の利点:** 標準化されたプロトコルのため、カスタム実装なしで様々なデータソースに接続可能 (REST API に類似)。
-- **構成:**
-  - **MCP クライアント:** LLMエージェントやアプリケーション (例: Claude Desktop、IDE)。
-  - **MCP サーバー:** 特定のデータソースやツールに接続し、機能を公開する軽量プログラム。
-- **MCP サーバーでできること:**
-  - **ツール:** 実行可能な機能をクライアントに公開 (例: 計算、検索)。
-  - **リソース:** データやコンテンツを公開。
-  - プロンプト、サンプリング、ルート (現状ではツールとリソースが主に利用)。
-- **現状:** 2024年11月発表の新しい技術で、発展途上。ツールとリソースアクセスが主な用途。
-- **将来性:** エージェントの流行に伴い、飛躍的に発展するになる可能性が高い。
+- **MCP (Model Context Protocol) is a protocol for LLM agents to connect to various data sources (content, tools, etc.).**
+- **Purpose:** Standardize connections and simplify the management of AI systems.
+- **Difference from Tools:** MCP is a **protocol**, while tools are one of the functionalities exposed through MCP.
+- **Previous Problem:** Connecting LLMs to different data sources required custom implementations.
+- **Benefits of MCP:** As a standardized protocol, it allows connection to various data sources without custom implementations (similar to REST APIs).
+- **Architecture:**
+  - **MCP Client:** LLM agents or applications (e.g., Claude Desktop, IDEs).
+  - **MCP Server:** Lightweight programs that connect to specific data sources or tools and expose their functionalities.
+- **What MCP Servers Can Do:**
+  - **Tools:** Expose executable functions to clients (e.g., calculations, searches).
+  - **Resources:** Expose data and content.
+  - Prompts, Sampling, and Roots (currently, Tools and Resources are mainly used).
+- **Current Status:** A new technology announced in November 2024, still under development. Primarily used for tool and resource access.
+- **Future Potential:** Likely to develop significantly as the popularity of agents grows.
 
-## MCPとは？
+## What is MCP?
 
-**MCP（Model Context Protocol）とは、LLMエージェントがコンテンツ、ツールなど、様々なデータソースに接続できるようにするためのプロトコルです。** 単一のプロトコルで接続を標準化することで、AIシステムの管理を容易にすることを目指しています。2024年11月にAnthropicが発表して以来、MCPはCursorなどのLLMベースのアプリケーションで利用されており、LLMエージェントの発展において重要な役割を果たしています。
+**MCP (Model Context Protocol) is a protocol designed to allow LLM agents to connect to various data sources, such as content and tools.** It aims to simplify the management of AI systems by standardizing connections with a single protocol. Since its announcement by Anthropic in November 2024, MCP has been utilized in LLM-based applications like Cursor, playing a vital role in the evolution of LLM agents.
 
-## MCPが解決する問題（ツールとの違い）
+## The Problem MCP Solves (Difference from Tools)
 
-筆者はCline（オープンソース版Cursor）でMCPのことを知りました。当初は、「わざわざ難しい名前を付けているが、これは単純にツールではないか？」と感じました。しかし、詳細に調べていくうちに、**MCPはプロトコルであり、ツールとは異なる**ことがわかりました。
+The author first learned about MCP through Cline (an open-source version of Cursor). Initially, the author thought, "Why give it such a complicated name? Isn't this just a tool?" However, upon closer examination, it became clear that **MCP is a protocol, and it's different from a tool.**
 
-例として、二つのシナリオを考えてみましょう。
+Let's consider two scenarios as examples:
 
-1.  AさんはLlamaIndexでLLMエージェントアプリケーションを開発しています。LangChainにあるツールを利用したいのですが、それが可能かどうか不明なため、調査が必要です。
+1.  Person A is developing an LLM agent application using LlamaIndex. They want to use tools available in LangChain, but they are unsure if it's possible and need to investigate.
 
-2.  BさんはTypeScriptでLLMエージェントアプリケーションを開発しています。エージェント用の検索ツールが必要ですが、LangChainのPythonライブラリには`duckduckgo`の検索ツールがあるものの、言語が異なるため利用できません。
+2.  Person B is developing an LLM agent application in TypeScript. They need a search tool for the agent, but the LangChain Python library has a `duckduckgo` search tool, which they can't use because of the different language.
 
-従来、このようにLLMと異なるデータソースに接続するには、それぞれカスタム実装が必要でした。しかし、MCPという標準化されたプロトコルがあれば、カスタム実装なしで、様々なデータソースに容易に接続できます（REST APIとよく似ています）。
+Traditionally, connecting LLMs to different data sources like these required individual custom implementations. However, with a standardized protocol like MCP, it's possible to easily connect to various data sources without custom implementations (very similar to REST APIs).
 
-## MCPの構成
+## MCP Architecture
 
-MCPはクライアント-サーバーアーキテクチャを採用しています：
+MCP adopts a client-server architecture:
 
-- **MCPクライアント:** LLMエージェントやアプリケーションで、データにアクセスするためにMCPを使用します（例: Claude Desktop、IDE、AIツール）。
+- **MCP Client:** LLM agents or applications that use MCP to access data (e.g., Claude Desktop, IDEs, AI tools).
 
-- **MCPサーバー:** 特定のデータソースやツールに接続し、その機能をMCPを通じて公開する軽量プログラムです（例: ファイルシステム、データベース、Webサービス）。
+- **MCP Server:** Lightweight programs that connect to specific data sources or tools and expose their functionalities through MCP (e.g., file systems, databases, web services).
 
 ![General architecture](images/General-architecture.png)
 
-ホストは複数のサーバーに接続でき、各サーバーが異なるデータソースへのアクセスを提供します。この設計により、AIはカスタム統合なしで多様なデータにアクセスできます。プロトコルはJSON-RPCに基づいており、多くのプログラミング言語と互換性があります。
+A host can connect to multiple servers, with each server providing access to different data sources. This design allows AI to access diverse data without custom integrations. The protocol is based on JSON-RPC, making it compatible with many programming languages.
 
-## MCPサーバーを実際に作ってみる
+## Building an MCP Server in Practice
 
-MCPはあくまでもプロトコルなので、プログラミング言語に関わらずサーバーを構築/アクセスすることができます。ただし、まだ発展途上であり、現在サポートされている(SDKが提供されている)言語はPython, TypeScript, Java, Kotlinです。今回はPythonで実装してみます。
+Since MCP is a protocol, you can build and access servers regardless of the programming language. However, it's still under development, and the currently supported languages (with available SDKs) are Python, TypeScript, Java, and Kotlin. This example will implement it in Python.
 
-### 環境準備
+### Environment Setup
 
-Pythonでサーバーを構築する際には`uv`というパッケージ管理ツールを利用しているので、まずそれをインストールします。
+The example uses `uv` for package management in Python, so first, install it.
 
 ```cmd
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-次に再起動し、Python環境をインストールします。
+Next, restart and install the Python environment.
 
 ```bash
-# 新しいプロジェクトディレクトリを作成
+# Create a new project directory
 uv init calculator
 cd calculator
 
-# 仮想環境を作成し、アクティベート
+# Create and activate a virtual environment
 uv venv
 source .venv/bin/activate
 
-# 依存関係をインストール
+# Install dependencies
 uv add "mcp[cli]"
 
-# サーバーファイルを作成
+# Create the server file
 touch calculator.py
 ```
 
-### サーバーロジックの実装
+### Implementing the Server Logic
 
-以下のスクリプトを`calculator.py`に記述すれば完了です。これにより、入力された数式を計算し、結果を返すツールを持つMCPサーバーが作成されます。
+Write the following script into `calculator.py`. This creates an MCP server with a tool that calculates a mathematical expression and returns the result.
 
 ```python
 from typing import Any
@@ -99,17 +99,17 @@ def calculator(expression: str) -> Any:
 
 
 if __name__ == "__main__":
-    # サーバーを初期化し、実行
+    # Initialize and run the server
     mcp.run(transport="stdio")
 ```
 
-いかがでしょうか。PythonのLangchainでツールを作理、FastAPIでサービングすることとよく似ていませんか。
+This is quite similar to creating a tool in LangChain with Python and serving it with FastAPI.
 
-## MCPサーバーにアクセスする
+## Accessing the MCP Server
 
-### 接続
+### Connection
 
-次に以下のコードを実行すれば、サーバーに接続できます。環境は任意なので、Jupyterで接続してみました。
+The following code can be used to connect to the server. The environment is arbitrary, so this example uses Jupyter.
 
 ```python
 from contextlib import AsyncExitStack
@@ -119,8 +119,8 @@ from mcp.client.stdio import stdio_client
 
 exit_stack = AsyncExitStack()
 
-command = "python" # 今回はPythonでサーバーコードを記述したため
-server_script_path = "calculator.py" # サーバーコードのパス
+command = "python" # Because the server code was written in Python
+server_script_path = "calculator.py" # Path to the server code
 server_params = StdioServerParameters(
     command=command, args=[server_script_path], env=None
 )
@@ -129,13 +129,13 @@ session = await exit_stack.enter_async_context(ClientSession(stdio, write))
 await session.initialize()
 ```
 
-上記のコードには`StdioServerParameters`などの見慣れない要素がありますが、利用する上で特に理解する必要はないので、そのまま書けば良いです。
+The above code includes unfamiliar elements like `StdioServerParameters`, but you don't need to understand them in detail to use them; just write them as they are.
 
-ちなみに、接続情報としてスクリプトの言語と`server_script_path`が必要なのは、現時点ではネットワークを介したMCPサーバーへの接続がまだ開発中であり、MCPサーバーがまだローカルでしか動作しないためです。ローカルでサーバーを動作させるために、内部で言語によってサーバースクリプトを実行する方法を変えています。Pythonの場合は`uvx`、TypeScriptの場合は`npx`でサーバースクリプトを実行しています。
+The reason the connection information needs the language of the script and `server_script_path` is that currently, connecting to MCP servers over a network is still under development, and MCP servers can only operate locally. To run the server locally, it internally changes how the server script is executed based on the language. In the case of Python, it uses `uvx`, and for TypeScript, it uses `npx` to execute the server script.
 
-### リクエスト
+### Request
 
-次にリクエストを実行してみましょう。まず、サーバー側でどのようなツールが利用可能かを確認します。
+Next, let's execute a request. First, check what tools are available on the server side.
 
 ```python
 response = await session.list_tools()
@@ -161,9 +161,9 @@ print(tools[0].model_dump_json(indent=4))
 }
 ```
 
-先ほど定義した`calculator`ツールの詳細が表示されました。
+The details of the `calculator` tool defined earlier are displayed.
 
-ツールの情報をLLMに送信すれば、LLMはユーザーのリクエストに応じてツールを呼び出し、利用することができます。例えば、LLMがユーザーから`4**2の結果は？`という質問を受け、それをツールで計算するとしましょう（今回は説明を簡潔にするためLLMの部分は省略します）。その場合、以下のようにMCPサーバーへリクエストし、結果を得ることができます。
+If the tool information is sent to the LLM, the LLM can call and use the tool according to the user's request. For example, let's say the LLM receives a question from the user, "What is the result of 4\*\*2?", and it will be calculated using the tool (the LLM part is omitted for brevity). In this case, you can request the MCP server and obtain the result as follows:
 
 ```python
 tool_name = "calculator"
@@ -176,52 +176,52 @@ result
 CallToolResult(meta=None, content=[TextContent(type='text', text='16', annotations=None)], isError=False)
 ```
 
-このように、利用したいツールとパラメータをサーバーに渡せば、結果が返ってきます。LLMはその結果を用いてユーザーに応答することができます。
+As shown, passing the desired tool and parameters to the server returns the result. The LLM can use this result to respond to the user.
 
-## ツール以外の機能
+## Features Beyond Tools
 
-ツールを利用する以外に、MCPサーバーでできることを以下にまとめました。
+Here's a summary of what else can be done with MCP servers besides using tools:
 
-- **リソース (Resources):** リソースは、Model Context Protocol (MCP) の中核となるプリミティブ（基本要素）であり、サーバーがデータやコンテンツを公開することを可能にします。クライアントはそれらを読み取り、LLM との対話のコンテキストとして使用できます。
+- **Resources:** Resources are the core primitives of the Model Context Protocol (MCP), enabling servers to expose data and content. Clients can read them and use them as context for interactions with the LLM.
 
-- **プロンプト (Prompts):** プロンプトにより、サーバーは再利用可能なプロンプトテンプレートとワークフローを定義できます。クライアントはこれらをユーザーや LLM に容易に提示できます。プロンプトは、一般的な LLM との対話を標準化し、共有するための強力な手段を提供します。
+- **Prompts:** Prompts allow servers to define reusable prompt templates and workflows. Clients can easily present these to users or LLMs. Prompts provide a powerful way to standardize and share common interactions with LLMs.
 
-- **ツール (Tools):** ツールは MCP の強力なプリミティブであり、サーバーが実行可能な機能をクライアントに公開できるようにします。ツールを通じて、LLM は外部システムと対話し、計算を実行し、現実世界でアクションを起こすことができます。
+- **Tools:** Tools are a powerful primitive of MCP, allowing servers to expose executable functions to clients. Through tools, LLMs can interact with external systems, perform calculations, and take actions in the real world.
 
-- **サンプリング (Sampling):** サンプリングは強力な MCP 機能であり、サーバーがクライアントを通じて LLM の補完を要求できるようにします。これにより、セキュリティとプライバシーを維持しながら、高度なエージェント的動作が可能になります。
+- **Sampling:** Sampling is a powerful MCP feature that allows servers to request LLM completions through clients. This enables advanced agentic behavior while maintaining security and privacy.
 
-- **ルート (Roots):** ルートは MCP の概念であり、サーバーが動作できる境界を定義します。クライアントがサーバーに関連リソースとその場所を通知するための手段を提供します。
+- **Roots:** Roots are an MCP concept that defines the boundaries within which a server can operate. They provide a way for clients to inform the server about related resources and their locations.
 
-5つの機能がありますが、残念ながら、現時点ではツール使用とリソースアクセスとしての利用がほとんどです。以下は各クライアントがサポートする機能をまとめたものです。
+Although there are five features, unfortunately, at present, they are mostly used for tool usage and resource access. Below is a summary of the features supported by each client.
 
-| Client                   | Resources | Prompts | Tools | Sampling | Roots | Notes                                                              |
-| ------------------------ | :-------: | :-----: | :---: | :------: | :---: | ------------------------------------------------------------------ |
-| Claude Desktop App       |    ✅     |   ✅    |  ✅   |    ❌    |  ❌   | Full support for all MCP features                                  |
-| 5ire                     |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
-| BeeAI Framework          |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in agentic workflows.                               |
-| Cline                    |    ✅     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools and resources.                                      |
-| Continue                 |    ✅     |   ✅    |  ✅   |    ❌    |  ❌   | Full support for all MCP features                                  |
-| Cursor                   |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
-| Emacs Mcp                |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in Emacs.                                           |
-| Firebase Genkit          |    ⚠️     |   ✅    |  ✅   |    ❌    |  ❌   | Supports resource list and lookup through tools.                   |
-| GenAIScript              |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
-| Goose                    |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
-| LibreChat                |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools for Agents                                          |
-| mcp-agent                |    ❌     |   ❌    |  ✅   |    ⚠️    |  ❌   | Supports tools, server connection management, and agent workflows. |
-| Roo Code                 |    ✅     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools and resources.                                      |
-| Sourcegraph Cody         |    ✅     |   ❌    |  ❌   |    ❌    |  ❌   | Supports resources through OpenCTX                                 |
-| Superinterface           |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools                                                     |
-| TheiaAI/TheiaIDE         |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools for Agents in Theia AI and the AI-powered Theia IDE |
-| Windsurf Editor          |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools with AI Flow for collaborative development.         |
-| Zed                      |    ❌     |   ✅    |  ❌   |    ❌    |  ❌   | Prompts appear as slash commands                                   |
-| \[OpenSumi\]\[OpenSumi\] |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in OpenSumi                                         |
+| Client             | Resources | Prompts | Tools | Sampling | Roots | Notes                                                              |
+| ------------------ | :-------: | :-----: | :---: | :------: | :---: | ------------------------------------------------------------------ |
+| Claude Desktop App |    ✅     |   ✅    |  ✅   |    ❌    |  ❌   | Full support for all MCP features                                  |
+| 5ire               |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| BeeAI Framework    |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in agentic workflows.                               |
+| Cline              |    ✅     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools and resources.                                      |
+| Continue           |    ✅     |   ✅    |  ✅   |    ❌    |  ❌   | Full support for all MCP features                                  |
+| Cursor             |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| Emacs Mcp          |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in Emacs.                                           |
+| Firebase Genkit    |    ⚠️     |   ✅    |  ✅   |    ❌    |  ❌   | Supports resource list and lookup through tools.                   |
+| GenAIScript        |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| Goose              |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools.                                                    |
+| LibreChat          |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools for Agents                                          |
+| mcp-agent          |    ❌     |   ❌    |  ✅   |    ⚠️    |  ❌   | Supports tools, server connection management, and agent workflows. |
+| Roo Code           |    ✅     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools and resources.                                      |
+| Sourcegraph Cody   |    ✅     |   ❌    |  ❌   |    ❌    |  ❌   | Supports resources through OpenCTX                                 |
+| Superinterface     |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools                                                     |
+| TheiaAI/TheiaIDE   |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools for Agents in Theia AI and the AI-powered Theia IDE |
+| Windsurf Editor    |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools with AI Flow for collaborative development.         |
+| Zed                |    ❌     |   ✅    |  ❌   |    ❌    |  ❌   | Prompts appear as slash commands                                   |
+| \[OpenSumi]        |    ❌     |   ❌    |  ✅   |    ❌    |  ❌   | Supports tools in OpenSumi                                         |
 
-## まとめ
+## Conclusion
 
-改めて、MCP(Model Context Protocol)はLLMとリソースのコミュニケーションを円滑にするための**プロトコル**です。SNS等で言及されているMCPは、実際にはMCPサーバーを指していることが多いです。2024年の11月に提唱され、まだ4ヶ月しか経っていない、生まれたばかりの技術です。ツール、リソースなどの機能がありますが、まだ発展途上のため、十分に活用されていません。しかし、エージェントが注目され始めている現在の状況から見ると、今できているツールの部分が全部MCPサーバーに代替されるでしょう。
+To reiterate, MCP (Model Context Protocol) is a **protocol** for facilitating communication between LLMs and resources. What is often referred to as MCP on social media is actually often referring to MCP servers. It was proposed in November 2024 and is a very new technology, only four months old. It has features such as tools and resources, but it is still under development and not yet fully utilized. However, given the current situation where agents are starting to gain attention, it is likely that the tool part, which is currently available, will be completely replaced by MCP servers.
 
-## もっと知りたい方へ
+## For Further Information
 
 - [Introducing the Model Context Protocol](https://www.anthropic.com/news/model-context-protocol)
-- [MCPの公式ドキュメント](https://modelcontextprotocol.io/introduction)
-- [MCPのpython SDK](https://github.com/modelcontextprotocol/python-sdk)
+- [MCP Official Documentation](https://modelcontextprotocol.io/introduction)
+- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
