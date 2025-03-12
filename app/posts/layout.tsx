@@ -17,11 +17,9 @@ export default function LayoutBlogPost({
         }}
       />
 
-      <div className="relative container mx-auto">
-        <main className="prose prose-gray dark:prose-invert mt-24 pb-20">
-          {children}
-        </main>
-      </div>
+      <main className="prose prose-gray dark:prose-invert mt-24 pb-20">
+        {children}
+      </main>
     </>
   )
 }
