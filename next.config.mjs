@@ -1,5 +1,6 @@
 import createMDX from '@next/mdx';
 import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeSlug from 'rehype-slug';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -11,6 +12,7 @@ const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     rehypePlugins: [
+      rehypeSlug,
       [
         rehypePrettyCode,
         {
