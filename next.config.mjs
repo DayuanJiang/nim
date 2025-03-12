@@ -14,7 +14,7 @@ const withMDX = createMDX({
       [
         rehypePrettyCode,
         {
-          theme: 'solarized-light',
+          theme: 'catppuccin-frappe',
           onVisitLine(node) {
             // Prevent lines from collapsing in `display: grid` mode
             if (node.children.length === 0) {
