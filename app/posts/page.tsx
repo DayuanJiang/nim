@@ -45,7 +45,7 @@ function formatDate(dateStr: string): string {
 
 // Get all posts from the file system
 async function getPosts() {
-  const postsDirectory = path.join(process.cwd(), 'app/posts')
+  const postsDirectory = path.join(process.cwd(), 'app/post')
   const entries = await readdir(postsDirectory, { withFileTypes: true })
   
   // Filter only directories and exclude layout file
@@ -61,7 +61,7 @@ async function getPosts() {
         title: meta?.title || dir.name,
         description: meta?.description || '',
         date: meta?.date ? formatDate(meta.date) : '',
-        href: `/posts/${dir.name}`
+        href: `/post/${dir.name}`
       }
     })
   )

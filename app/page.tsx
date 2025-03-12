@@ -31,7 +31,7 @@ async function extractMetadata(filePath: string): Promise<PostMeta | null> {
 }
 
 async function getPosts() {
-  const postsDirectory = path.join(process.cwd(), 'app/posts')
+  const postsDirectory = path.join(process.cwd(), 'app/post')
   const entries = await readdir(postsDirectory, { withFileTypes: true })
   
   const postDirs = entries.filter(entry => entry.isDirectory())
@@ -45,7 +45,7 @@ async function getPosts() {
         title: meta?.title || dir.name,
         description: meta?.description || '',
         date: meta?.date || '',
-        href: `/posts/${dir.name}`
+        href: `/post/${dir.name}`
       }
     })
   )
