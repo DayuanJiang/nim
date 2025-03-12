@@ -78,10 +78,10 @@ export default async function PostsPage() {
   const posts = await getPosts()
 
   return (
-    <div className="flex flex-col space-y-0">
+    <div className="flex flex-col">
       <AnimatedBackground
         enableHover
-        className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80"
+        className="h-full w-full rounded-lg bg-zinc-100 dark:bg-zinc-900/80 space-y-1"
         transition={{
           type: 'spring',
           bounce: 0,
@@ -91,12 +91,12 @@ export default async function PostsPage() {
         {posts.map((post) => (
           <Link
             key={post.slug}
-            className="-mx-3 rounded-xl px-3 py-3"
+            className="-mx-3 rounded-xl px-3 py-3 no-underline hover:no-underline"
             href={post.href}
             data-id={post.slug}
           >
-            <div className="flex flex-col space-y-1">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-0">
+              <div className="flex items-center justify-between mb-0.5">
                 <h4 className="font-normal dark:text-zinc-100">
                   {post.title}
                 </h4>
@@ -107,7 +107,7 @@ export default async function PostsPage() {
                 )}
               </div>
               {post.description && (
-                <p className="text-zinc-500 dark:text-zinc-400">
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm my-0">
                   {post.description}
                 </p>
               )}
