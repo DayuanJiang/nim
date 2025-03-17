@@ -13,7 +13,7 @@ export type ScrollProgressProps = {
 const DEFAULT_SPRING_OPTIONS: SpringOptions = {
   stiffness: 200,
   damping: 50,
-  restDelta: 0.001,
+  restDelta: 0.01,
 }
 
 export function ScrollProgress({

@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { Spotlight } from '@/components/ui/spotlight'
 import Link from 'next/link'
 import { AnimatedBackground } from '@/components/ui/animated-background'
 import { MagneticSocialLink } from '@/components/ui/MagneticSocialLink'
